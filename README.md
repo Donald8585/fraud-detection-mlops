@@ -67,7 +67,7 @@ Client Request → API Gateway → Lambda Function → SageMaker Endpoint → Re
   "fraud_score": 0.87,
   "message": "Fraud detected"
 }
-
+```
 **Legitimate Transaction:**
 ```json
 {
@@ -75,7 +75,7 @@ Client Request → API Gateway → Lambda Function → SageMaker Endpoint → Re
   "fraud_score": 0.000047,
   "message": "Legitimate transaction"
 }
-
+```
 ---
 
 Screenshots
@@ -207,7 +207,7 @@ Method: POST
 
 Request Format:
 
-bash
+```bash
 curl -X POST https://aa17j8hu64.execute-api.us-east-1.amazonaws.com/prod/predict \
   -H "Content-Type: application/json" \
   -d '{
@@ -218,14 +218,16 @@ curl -X POST https://aa17j8hu64.execute-api.us-east-1.amazonaws.com/prod/predict
       0.07, 0.13, -0.19, 0.13, -0.02, 0.0
     ]
   }'
+```
 Response:
 
-json
+```json
 {
   "prediction": 1,
   "fraud_score": 0.87,
   "message": "Fraud detected"
 }
+```
 Feature Order: Time, V1-V28 (PCA components), Amount
 
 ---
