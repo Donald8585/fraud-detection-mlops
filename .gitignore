@@ -13,3 +13,10 @@ test.csv
 
 # Test files
 test_*.py
+
+# Test files
+test_*.py
+
+# Config files
+trust-policy.json
+setup.sh
