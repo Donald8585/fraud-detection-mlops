@@ -16,26 +16,20 @@ Production-grade fraud detection system that processes credit card transactions 
 
 ## 🏗️ Architecture
 
-┌─────────────┐ ┌──────────┐ ┌─────────────────┐ ┌──────────────┐
-│ Kaggle │─────▶│ S3 │─────▶│ SageMaker │─────▶│ SageMaker │
-│ Dataset │     │ Bucket │   │ Training Job │    │ Endpoint │
-└─────────────┘ └──────────┘ └─────────────────┘ └──────┬───────┘
-                                                        │
-┌───────────────────────────────────────────────────────┘
-│
-▼
-┌─────────────┐ ┌──────────┐ ┌─────────────────┐
-│ Client │─────▶│ API │─────▶│ Lambda │
-│ Request │      │ Gateway │  │ Function │
-└─────────────┘ └──────────┘ └─────────────────┘
+**Data Pipeline:**
+Kaggle Dataset → S3 Bucket → SageMaker Training Job → Model Artifacts → SageMaker Endpoint
 
 
-**Pipeline Flow:**
-1. Data uploaded to S3 bucket
-2. SageMaker training job trains XGBoost model (ml.m5.large)
-3. Model deployed to SageMaker endpoint (ml.t2.medium)
-4. Lambda function handles inference requests
-5. API Gateway exposes REST API endpoint
+**Inference Pipeline:**
+Client Request → API Gateway → Lambda Function → SageMaker Endpoint → Response
+
+
+**Components:**
+- **Data Storage:** S3 bucket for training data and model artifacts
+- **Training:** SageMaker training job (ml.m5.large instance)
+- **Model Hosting:** SageMaker real-time endpoint (ml.t2.medium instance)
+- **API Layer:** AWS Lambda + API Gateway (serverless, edge-optimized)
+- **Monitoring:** CloudWatch logs and metrics
 
 ---
 
@@ -74,20 +68,23 @@ Production-grade fraud detection system that processes credit card transactions 
   "message": "Fraud detected"
 }
 
-Legitimate Transaction:
-
-json
+**Legitimate Transaction:**
+```json
 {
   "prediction": 0,
   "fraud_score": 0.000047,
   "message": "Legitimate transaction"
 }
 
+---
+
 Screenshots
 ![SageMaker Endpoint](screenshots/sagemaker-endpoint.png)
 ![Lambda Function](screenshots/lambda-function.png)
-![API Response Fraud](screenshots/api-response-fraud.png)
-![API Response Legitimate](screenshots/api-response-legit.png)
+![API Response - Fraud](screenshots/api-response-fraud.png)
+![API Response - Legitimate](screenshots/api-response-legit.png)
+
+---
 
 🚀 Features
 ✅ Real-time inference: <100ms response time
@@ -103,6 +100,8 @@ Screenshots
 ✅ RESTful API: Standard JSON interface with HTTPS
 
 ✅ Edge-optimized: CloudFront distribution for low latency
+
+---
 
 📊 Model Details
 Algorithm: XGBoost (eXtreme Gradient Boosting)
@@ -137,8 +136,9 @@ Content type: text/csv
 
 Response time: <100ms
 
+---
+
 🛠️ Project Structure
-text
 fraud-detection-mlops/
 ├── src/
 │   ├── train_boto3.py          # Automated training pipeline
@@ -147,11 +147,15 @@ fraud-detection-mlops/
 ├── data/
 │   └── creditcard.csv          # Training dataset
 ├── screenshots/                 # Deployment proof
-│   ├── api-response.png
+│   ├── api-response-fraud.png
+│   ├── api-response-legit.png
 │   ├── sagemaker-endpoint.png
 │   └── lambda-function.png
 ├── requirements.txt
 └── README.md
+
+---
+
 💰 Cost Analysis
 Training (One-time):
 
@@ -182,6 +186,8 @@ Storage:
 S3: ~$0.01/month (model artifacts + data)
 
 Total Project Cost: ~$0.05 (endpoint shut down after testing)
+
+---
 
 🔄 Redeployment Instructions
 Endpoint can be redeployed in 5 minutes using automated script:
@@ -222,37 +228,41 @@ json
 }
 Feature Order: Time, V1-V28 (PCA components), Amount
 
+---
+
 🎓 Skills Demonstrated
 MLOps & Cloud Engineering
-✅ End-to-end ML pipeline automation
+End-to-end ML pipeline automation
 
-✅ AWS SageMaker training job orchestration
+AWS SageMaker training job orchestration
 
-✅ Real-time model deployment and hosting
+Real-time model deployment and hosting
 
-✅ Serverless architecture (Lambda + API Gateway)
+Serverless architecture (Lambda + API Gateway)
 
-✅ Infrastructure automation with boto3
+Infrastructure automation with boto3
 
-✅ Cost optimization strategies
+Cost optimization strategies
 
 Machine Learning
-✅ Binary classification with XGBoost
+Binary classification with XGBoost
 
-✅ Handling imbalanced datasets
+Handling imbalanced datasets
 
-✅ Feature engineering with PCA components
+Feature engineering with PCA components
 
-✅ Model evaluation and hyperparameter tuning
+Model evaluation and hyperparameter tuning
 
 Software Engineering
-✅ RESTful API design
+RESTful API design
 
-✅ Error handling and logging
+Error handling and logging
 
-✅ Cloud resource management
+Cloud resource management
 
-✅ Version control with Git
+Version control with Git
+
+---
 
 📈 Future Enhancements
  Implement CI/CD pipeline with GitHub Actions
@@ -271,10 +281,14 @@ Software Engineering
 
  Implement batch inference pipeline
 
+---
+
 📝 Dataset Citation
 Credit Card Fraud Detection Dataset
 Source: Kaggle
 License: Open Database License (ODbL)
+
+---
 
 🔗 Links
 GitHub Repository: github.com/Donald8585/fraud-detection-mlops
