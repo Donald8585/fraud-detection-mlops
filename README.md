@@ -19,3 +19,12 @@ Kaggle Dataset → S3 → SageMaker Training (XGBoost) → Model Artifacts → S
 curl -X POST https://aa17j8hu64.execute-api.us-east-1.amazonaws.com/prod/predict \
   -H "Content-Type: application/json" \
   -d '{"features": [...]}'
+
+## 📂 Key Files
+- **src/train_boto3.py** - SageMaker training with pure boto3 (production approach)
+- **src/lambda_function.py** - Serverless inference handler for API Gateway
+- **src/requirements.txt** - Python dependencies
+
+## 🔗 Links
+- **Live API:** https://aa17j8hu64.execute-api.us-east-1.amazonaws.com/prod/predict
+- **SageMaker Endpoint:** fraud-detection-endpoint (InService)
