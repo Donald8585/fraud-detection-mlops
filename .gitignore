@@ -1,0 +1,15 @@
+
+# Data files
+*.csv
+creditcard.csv
+train.csv
+test.csv
+
+# Model files
+*.pkl
+
+# Zip files
+*.zip
+
+# Test files
+test_*.py

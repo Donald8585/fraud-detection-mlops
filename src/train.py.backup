@@ -1,0 +1,106 @@
+import pandas as pd
+import numpy as np
+import boto3
+import sagemaker
+from sagemaker.estimator import Estimator
+from sklearn.model_selection import train_test_split
+import mlflow
+import mlflow.sagemaker
+import argparse
+
+# MLflow setup
+mlflow.set_tracking_uri("http://YOUR_MLFLOW_SERVER:5000")  # Replace after MLflow setup
+mlflow.set_experiment("fraud-detection")
+
+def preprocess_data():
+    """Load and preprocess fraud detection data"""
+    # Using Kaggle credit card fraud dataset
+    # Download from: https://www.kaggle.com/mlg-ulb/creditcardfraud
+    df = pd.read_csv('creditcard.csv')
+    
+    # Split features and target
+    X = df.drop('Class', axis=1)
+    y = df['Class']
+    
+    # Train/test split
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, stratify=y, random_state=42
+    )
+    
+    # Save to S3
+    s3_client = boto3.client('s3')
+    bucket = 'your-fraud-detection-bucket-1767008231'  # Change this
+    
+    train_data = pd.concat([y_train, X_train], axis=1)
+    test_data = pd.concat([y_test, X_test], axis=1)
+    
+    train_data.to_csv('train.csv', index=False, header=False)
+    test_data.to_csv('test.csv', index=False, header=False)
+    
+    s3_client.upload_file('train.csv', bucket, 'data/train.csv')
+    s3_client.upload_file('test.csv', bucket, 'data/test.csv')
+    
+    return f's3://{bucket}/data/train.csv', f's3://{bucket}/data/test.csv'
+
+def train_model():
+    """Train XGBoost model on SageMaker"""
+    with mlflow.start_run():
+        # Log parameters
+        params = {
+            'max_depth': 5,
+            'eta': 0.2,
+            'objective': 'binary:logistic',
+            'num_round': 100,
+            'scale_pos_weight': 10  # Handle imbalanced data
+        }
+        mlflow.log_params(params)
+        
+        # SageMaker setup
+        sagemaker_session = sagemaker.Session()
+        role = sagemaker.get_execution_role()
+        region = boto3.Session().region_name
+        
+        # XGBoost estimator
+        xgb = Estimator(
+    image_uri=sagemaker.image_uris.retrieve('xgboost', region, '1.7-1'),
+    entry_point='inference.py',
+    role=role,
+    instance_count=1,
+    instance_type='ml.m5.xlarge',
+    output_path=f's3://your-fraud-detection-bucket-1767008231/models/',
+    sagemaker_session=sagemaker_session,
+    hyperparameters={
+        'max_depth': '5',
+        'eta': '0.2',
+        'objective': 'binary:logistic',
+        'num_round': '100',
+        'scale_pos_weight': '10'
+    }
+)
+        
+        # Train
+        train_input = 's3://your-fraud-detection-bucket-1767008231/data/train.csv'
+        test_input = 's3://your-fraud-detection-bucket-1767008231/data/test.csv'
+        
+        xgb.fit({'train': train_input, 'validation': test_input})
+        
+        # Log model to MLflow
+        mlflow.log_metric("training_job", xgb.latest_training_job.name)
+        
+        # Deploy endpoint
+        predictor = xgb.deploy(
+            initial_instance_count=1,
+            instance_type='ml.t2.medium',
+            endpoint_name='fraud-detection-endpoint'
+        )
+        
+        mlflow.log_param("endpoint_name", predictor.endpoint_name)
+        
+        print(f"Model deployed to endpoint: {predictor.endpoint_name}")
+        return predictor.endpoint_name
+
+if __name__ == '__main__':
+    print("Starting training pipeline...")
+    preprocess_data()
+    endpoint = train_model()
+    print(f"Training complete! Endpoint: {endpoint}")

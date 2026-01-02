@@ -1,20 +1,12 @@
 import json
 import boto3
-import os
 
 runtime = boto3.client('sagemaker-runtime')
-ENDPOINT_NAME = os.environ['SAGEMAKER_ENDPOINT']
 
 def lambda_handler(event, context):
-    """
-    Lambda function to invoke SageMaker endpoint
-    Triggered by API Gateway
-    """
     try:
         # Parse input from API Gateway
         body = json.loads(event['body']) if isinstance(event.get('body'), str) else event
-        
-        # Extract features (expects 30 features for credit card fraud)
         features = body.get('features', [])
         
         if len(features) != 30:
@@ -24,21 +16,21 @@ def lambda_handler(event, context):
                 'body': json.dumps({'error': 'Expected 30 features'})
             }
         
-        # Prepare payload for SageMaker
-        payload = json.dumps({'features': features})
+        # XGBoost expects CSV format (comma-separated values)
+        csv_data = ','.join(map(str, features))
         
-        # Invoke SageMaker endpoint
+        # Invoke SageMaker endpoint with CSV
         response = runtime.invoke_endpoint(
-            EndpointName=ENDPOINT_NAME,
-            ContentType='application/json',
-            Body=payload
+            EndpointName='fraud-detection-endpoint',
+            ContentType='text/csv',
+            Body=csv_data
         )
         
-        # Parse response
-        result = json.loads(response['Body'].read().decode())
+        # Parse prediction (XGBoost returns raw score)
+        result = float(response['Body'].read().decode().strip())
+        prediction = 1 if result > 0.5 else 0
         
-        # Log to CloudWatch for monitoring
-        print(f"Prediction: {result}")
+        print(f"Score: {result}, Prediction: {prediction}")
         
         return {
             'statusCode': 200,
@@ -46,7 +38,11 @@ def lambda_handler(event, context):
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps(result)
+            'body': json.dumps({
+                'prediction': prediction,
+                'fraud_score': result,
+                'message': 'Fraud detected' if prediction == 1 else 'Legitimate transaction'
+            })
         }
         
     except Exception as e:
