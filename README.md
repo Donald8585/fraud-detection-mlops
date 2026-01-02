@@ -79,6 +79,7 @@ Client Request → API Gateway → Lambda Function → SageMaker Endpoint → Re
 ---
 
 Screenshots
+
 ![SageMaker Endpoint](screenshots/sagemaker-endpoint.png)
 ![Lambda Function](screenshots/lambda-function.png)
 ![API Response - Fraud](screenshots/api-response-fraud.png)
@@ -87,6 +88,7 @@ Screenshots
 ---
 
 🚀 Features
+
 ✅ Real-time inference: <100ms response time
 
 ✅ Automated training: boto3-powered training pipeline
@@ -104,6 +106,7 @@ Screenshots
 ---
 
 📊 Model Details
+
 Algorithm: XGBoost (eXtreme Gradient Boosting)
 
 Dataset: Kaggle Credit Card Fraud Detection
@@ -139,6 +142,8 @@ Response time: <100ms
 ---
 
 🛠️ Project Structure
+
+```text
 fraud-detection-mlops/
 ├── src/
 │   ├── train_boto3.py          # Automated training pipeline
@@ -153,10 +158,11 @@ fraud-detection-mlops/
 │   └── lambda-function.png
 ├── requirements.txt
 └── README.md
-
+```
 ---
 
 💰 Cost Analysis
+
 Training (One-time):
 
 Instance: ml.m5.large ($0.115/hour)
@@ -190,17 +196,23 @@ Total Project Cost: ~$0.05 (endpoint shut down after testing)
 ---
 
 🔄 Redeployment Instructions
+
 Endpoint can be redeployed in 5 minutes using automated script:
 
 bash
+
 # Install dependencies
+
 pip install -r requirements.txt
 
 # Run training and deployment pipeline
+
 python src/train_boto3.py
 
 # Endpoint will be created automatically and ready for inference
+
 🧪 API Usage
+
 Endpoint: https://aa17j8hu64.execute-api.us-east-1.amazonaws.com/prod/predict
 
 Method: POST
@@ -233,7 +245,9 @@ Feature Order: Time, V1-V28 (PCA components), Amount
 ---
 
 🎓 Skills Demonstrated
-MLOps & Cloud Engineering
+
+MLOps & Cloud Engineering:
+
 End-to-end ML pipeline automation
 
 AWS SageMaker training job orchestration
@@ -246,7 +260,8 @@ Infrastructure automation with boto3
 
 Cost optimization strategies
 
-Machine Learning
+Machine Learning:
+
 Binary classification with XGBoost
 
 Handling imbalanced datasets
@@ -255,7 +270,8 @@ Feature engineering with PCA components
 
 Model evaluation and hyperparameter tuning
 
-Software Engineering
+Software Engineering:
+
 RESTful API design
 
 Error handling and logging
@@ -286,20 +302,27 @@ Version control with Git
 ---
 
 📝 Dataset Citation
+
 Credit Card Fraud Detection Dataset
+
 Source: Kaggle
+
 License: Open Database License (ODbL)
 
 ---
 
 🔗 Links
+
 GitHub Repository: github.com/Donald8585/fraud-detection-mlops
 
 LinkedIn: https://www.linkedin.com/in/alfred-so/
 
 📧 Contact
+
 So Chit Wai
+
 ML Engineer | Data Scientist
+
 📧 fiverrkroft@gmail.com
 
 Built with ❤️ for production ML systems
