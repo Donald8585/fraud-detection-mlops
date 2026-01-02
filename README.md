@@ -105,39 +105,28 @@ Screenshots
 
 ---
 
-📊 Model Details
+## 📊 Model Details
 
-Algorithm: XGBoost (eXtreme Gradient Boosting)
+**Algorithm:** XGBoost (eXtreme Gradient Boosting)
 
-Dataset: Kaggle Credit Card Fraud Detection
+**Dataset:** Kaggle Credit Card Fraud Detection
+- 284,807 transactions
+- 30 features (Time, V1-V28 PCA components, Amount)
+- Highly imbalanced (0.172% fraud rate)
 
-284,807 transactions
+**Training Configuration:**
+- Instance: ml.m5.large
+- Hyperparameters:
+  - `max_depth`: 5
+  - `eta`: 0.2
+  - `objective`: binary:logistic
+  - `num_round`: 100
 
-30 features (Time, V1-V28 PCA components, Amount)
+**Inference Configuration:**
+- Instance: ml.t2.medium
+- Content type: text/csv
+- Response time: <100ms
 
-Highly imbalanced (0.172% fraud rate)
-
-Training Configuration:
-
-Instance: ml.m5.large
-
-Hyperparameters:
-
-max_depth: 5
-
-eta: 0.2
-
-objective: binary:logistic
-
-num_round: 100
-
-Inference Configuration:
-
-Instance: ml.t2.medium
-
-Content type: text/csv
-
-Response time: <100ms
 
 ---
 
@@ -148,7 +137,6 @@ fraud-detection-mlops/
 ├── src/
 │   ├── train_boto3.py          # Automated training pipeline
 │   ├── lambda_function.py      # Lambda inference handler
-│   └── test_api.py             # API testing script
 ├── data/
 │   └── creditcard.csv          # Training dataset
 ├── screenshots/                 # Deployment proof
@@ -161,37 +149,28 @@ fraud-detection-mlops/
 ```
 ---
 
-💰 Cost Analysis
+## 💰 Cost Analysis
 
-Training (One-time):
+**Training (One-time):**
+- Instance: ml.m5.large ($0.115/hour)
+- Duration: ~10 minutes
+- Cost: ~$0.02
 
-Instance: ml.m5.large ($0.115/hour)
+**Inference Endpoint:**
+- Instance: ml.t2.medium ($0.05/hour)
+- Monthly cost: ~$36/month (when running 24/7)
+- **Current status:** Shut down to save costs ✅
 
-Duration: ~10 minutes
+**API Gateway + Lambda:**
+- Lambda: $0.20 per 1M requests
+- API Gateway: $3.50 per 1M requests
+- Idle cost: $0 (only charged per request)
 
-Cost: ~$0.02
+**Storage:**
+- S3: ~$0.01/month (model artifacts + data)
 
-Inference Endpoint:
+**Total Project Cost:** ~$0.05 (endpoint shut down after testing)
 
-Instance: ml.t2.medium ($0.05/hour)
-
-Monthly cost: ~$36/month (when running 24/7)
-
-Current status: Shut down to save costs ✅
-
-API Gateway + Lambda:
-
-Lambda: $0.20 per 1M requests
-
-API Gateway: $3.50 per 1M requests
-
-Idle cost: $0 (only charged per request)
-
-Storage:
-
-S3: ~$0.01/month (model artifacts + data)
-
-Total Project Cost: ~$0.05 (endpoint shut down after testing)
 
 ---
 
@@ -199,7 +178,7 @@ Total Project Cost: ~$0.05 (endpoint shut down after testing)
 
 Endpoint can be redeployed in 5 minutes using automated script:
 
-bash
+```bash
 
 # Install dependencies
 
@@ -210,6 +189,8 @@ pip install -r requirements.txt
 python src/train_boto3.py
 
 # Endpoint will be created automatically and ready for inference
+
+```
 
 🧪 API Usage
 
@@ -244,60 +225,40 @@ Feature Order: Time, V1-V28 (PCA components), Amount
 
 ---
 
-🎓 Skills Demonstrated
+## 🎓 Skills Demonstrated
 
-MLOps & Cloud Engineering:
+### MLOps & Cloud Engineering
+- End-to-end ML pipeline automation
+- AWS SageMaker training job orchestration
+- Real-time model deployment and hosting
+- Serverless architecture (Lambda + API Gateway)
+- Infrastructure automation with boto3
+- Cost optimization strategies
 
-End-to-end ML pipeline automation
+### Machine Learning
+- Binary classification with XGBoost
+- Handling imbalanced datasets
+- Feature engineering with PCA components
+- Model evaluation and hyperparameter tuning
 
-AWS SageMaker training job orchestration
-
-Real-time model deployment and hosting
-
-Serverless architecture (Lambda + API Gateway)
-
-Infrastructure automation with boto3
-
-Cost optimization strategies
-
-Machine Learning:
-
-Binary classification with XGBoost
-
-Handling imbalanced datasets
-
-Feature engineering with PCA components
-
-Model evaluation and hyperparameter tuning
-
-Software Engineering:
-
-RESTful API design
-
-Error handling and logging
-
-Cloud resource management
-
-Version control with Git
+### Software Engineering
+- RESTful API design
+- Error handling and logging
+- Cloud resource management
+- Version control with Git
 
 ---
 
-📈 Future Enhancements
- Implement CI/CD pipeline with GitHub Actions
+## 📈 Future Enhancements
 
- Add model monitoring and drift detection
-
- Deploy with AWS CDK/Terraform for IaC
-
- Implement A/B testing framework
-
- Add model versioning and rollback capability
-
- Create comprehensive test suite
-
- Add CloudWatch dashboards for metrics
-
- Implement batch inference pipeline
+- [ ] Implement CI/CD pipeline with GitHub Actions
+- [ ] Add model monitoring and drift detection
+- [ ] Deploy with AWS CDK/Terraform for IaC
+- [ ] Implement A/B testing framework
+- [ ] Add model versioning and rollback capability
+- [ ] Create comprehensive test suite
+- [ ] Add CloudWatch dashboards for metrics
+- [ ] Implement batch inference pipeline
 
 ---
 
