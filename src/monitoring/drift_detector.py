@@ -2,8 +2,12 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 import boto3
-from datetime import datetime, timedelta
-import mlflow
+from datetime import datetime, timezone
+try:
+    import mlflow
+    MLFLOW_AVAILABLE = True
+except ImportError:
+    MLFLOW_AVAILABLE = False
 
 class ModelDriftDetector:
     def __init__(self, baseline_data_path, threshold=0.05):
@@ -48,17 +52,18 @@ class ModelDriftDetector:
                     'MetricName': f'DriftScore_{feature}',
                     'Value': ks_statistic,
                     'Unit': 'None',
-                    'Timestamp': datetime.now()
+                    'Timestamp': datetime.now(timezone.utc),
                 }]
             )
 
         # Log to MLflow if tracking URI is set
-        try:
-            mlflow.log_metrics({
-                f'drift_{k}': v for k, v in drift_scores.items()
-            })
-        except:
-            pass
+        if MLFLOW_AVAILABLE:
+            try:
+                mlflow.log_metrics({
+                    f'drift_score_{feature}': score
+        })
+            except Exception:
+                pass  # Skip if MLflow server not available
 
         return {
             'drift_detected': any(drift_detected.values()),

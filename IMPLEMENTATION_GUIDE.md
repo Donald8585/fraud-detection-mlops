@@ -121,20 +121,8 @@ orchestrator.deploy_model_with_ab_testing(
 
 ### 7. Set Up Model Monitoring
 
-```python
-from src.monitoring.drift_detector import ModelDriftDetector
-
-detector = ModelDriftDetector(
-    baseline_data_path='s3://bucket/baseline_data.csv',
-    threshold=0.05
-)
-
-# Run drift detection (schedule this with EventBridge)
-current_data = pd.read_csv('s3://bucket/current_week_data.csv')
-drift_result = detector.detect_data_drift(current_data)
-
-if drift_result['drift_detected']:
-    detector.send_alert(drift_result, sns_topic_arn)
+```bash
+python test_monitoring.py
 ```
 
 ### 8. Run Tests
